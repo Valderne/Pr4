@@ -1,70 +1,103 @@
 #include <iostream>
-
 using namespace std;
 
-class Vehicle {
-protected:
-    string name;
-    string type;
-
+class Car {
 public:
-    Vehicle(string name = "", string type = "") {
-        this->name = name;
-        this->type = type;
-    }
-
-    ~Vehicle() {}
-
-    virtual void getInfo() {
-        cout << "Name: " << name << endl;
-        cout << "Type: " << type << endl;
-    }
+    virtual string getModel() = 0;
+    virtual int getHorsepower() = 0;
+    virtual int getYear() = 0;
+    virtual int getCost() = 0;
+    virtual ~Car() {};
 };
 
-class Car : public Vehicle {
+class Nissan : public Car {
+public:
+    Nissan(int _horsepower, int _year) {
+        horsepower = _horsepower;
+        year = _year;
+    }
+    string getModel() {
+        return model;
+    }
+    int getHorsepower() {
+        return horsepower;
+    }
+    int getYear() {
+        return year;
+    }
+    int getCost() {
+        return cost;
+    }
 private:
-    double fuelCapacity;
-
-public:
-    Car(string name = "", string type = "Car", double fuelCapacity = 50)
-        : Vehicle(name, type) {
-        this->fuelCapacity = fuelCapacity;
-    }
-
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Fuel capacity: " << fuelCapacity << endl;
-    }
+    string model = "Nissan";
+    int cost = 15000;
+    int horsepower;
+    int year;
 };
 
-class Truck : public Vehicle {
+class Toyota : public Car {
+public:
+    Toyota(int _horsepower, int _year) {
+        horsepower = _horsepower;
+        year = _year;
+    }
+    string getModel() {
+        return model;
+    }
+    int getHorsepower() {
+        return horsepower;
+    }
+    int getYear() {
+        return year;
+    }
+    int getCost() {
+        return cost;
+    }
 private:
-    double cargoCapacity;
-
-public:
-    Truck(string name = "", string type = "Truck", double cargoCapacity = 10000)
-        : Vehicle(name, type) {
-        this->cargoCapacity = cargoCapacity;
-    }
-
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Cargo capacity: " << cargoCapacity << endl;
-    }
+    string model = "Supra";
+    int cost = 12000;
+    int horsepower;
+    int year;
 };
 
-int main() {
-    Vehicle* vehicles[] = {
-        new Car("BMW", "Sedan", 60),
-        new Truck("Volvo", "Semi-trailer", 40000),
-    };
+class BMW : public Car {
+public:
+    BMW(int _horsepower, int _year) {
+        horsepower = _horsepower;
+        year = _year;
+    }
+    string getModel() {
+        return model;
+    }
+    int getHorsepower() {
+        return horsepower;
+    }
+    int getYear() {
+        return year;
+    }
+    int getCost() {
+        return cost;
+    }
+private:
+    string model = "E36";
+    int cost = 8000;
+    int horsepower;
+    int year;
+};
 
-    for (Vehicle* vehicle : vehicles) {
-        vehicle->getInfo();
+int main()
+{
+    Car* cars[] = { new Nissan(1020,2007), new Toyota(730, 2015), new BMW(715,2000) };
+    for (int i = 0; i < size(cars); i++) {
+        cout << "Model: " << cars[i]->getModel() << endl
+            << "Horsepower: " << cars[i]->getHorsepower() << endl
+            << "Year: " << cars[i]->getYear() << endl
+            << "Cost: " << cars[i]->getCost() << endl
+            << "--------------" << endl;
     }
 
-    for (Vehicle* vehicle : vehicles) {
-        delete vehicle;
+    for (int i = 0; i < size(cars); i++) {
+        delete cars[i];
     }
 
     return 0;
