@@ -15,26 +15,7 @@ public:
 
     ~Vehicle() {}
 
-    virtual void getInfo() {
-        cout << "Name: " << name << endl;
-        cout << "Type: " << type << endl;
-    }
-};
-
-class Car : public Vehicle {
-private:
-    double fuelCapacity;
-
-public:
-    Car(string name = "", string type = "Car", double fuelCapacity = 50)
-        : Vehicle(name, type) {
-        this->fuelCapacity = fuelCapacity;
-    }
-
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Fuel capacity: " << fuelCapacity << endl;
-    }
+    virtual void getInfo() = 0;
 };
 
 class Truck : public Vehicle {
@@ -48,24 +29,8 @@ public:
     }
 
     void getInfo() override {
-        Vehicle::getInfo();
+        cout << "Name: " << name << endl;
+        cout << "Type: " << type << endl;
         cout << "Cargo capacity: " << cargoCapacity << endl;
     }
 };
-
-int main() {
-    Vehicle* vehicles[] = {
-        new Car("BMW", "Sedan", 60),
-        new Truck("Volvo", "Semi-trailer", 40000),
-    };
-
-    for (Vehicle* vehicle : vehicles) {
-        vehicle->getInfo();
-    }
-
-    for (Vehicle* vehicle : vehicles) {
-        delete vehicle;
-    }
-
-    return 0;
-}
