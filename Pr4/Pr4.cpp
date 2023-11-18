@@ -2,70 +2,84 @@
 
 using namespace std;
 
-class Vehicle {
-protected:
-    string name;
-    string type;
-
+class Dish {
 public:
-    Vehicle(string name = "", string type = "") {
-        this->name = name;
-        this->type = type;
+    virtual void prepareIngredients() = 0;
+    virtual void cook() = 0;
+    virtual void serve() = 0;
+};
+
+class Pizza : public Dish {
+public:
+    void prepareIngredients() override {
+        std::cout << "Preparation of ingredients for pizza:" << std::endl;
+        std::cout << "-dough" << std::endl;
+        std::cout << "-sauce" << std::endl;
+        std::cout << "-pizza topping" << std::endl;
     }
 
-    ~Vehicle() {}
+    void cook() override {
+        std::cout << "Cooking pizza in the oven" << std::endl;
+    }
 
-    virtual void getInfo() {
-        cout << "Name: " << name << endl;
-        cout << "Type: " << type << endl;
+    void serve() override {
+        std::cout << "Serving pizza to the table" << std::endl;
     }
 };
 
-class Car : public Vehicle {
-private:
-    double fuelCapacity;
-
+class Soup : public Dish {
 public:
-    Car(string name = "", string type = "Car", double fuelCapacity = 50)
-        : Vehicle(name, type) {
-        this->fuelCapacity = fuelCapacity;
+    void prepareIngredients() override {
+        std::cout << "Preparation of ingredients for soup:" << std::endl;
+        std::cout << "-bouillon" << std::endl;
+        std::cout << "-vegetables" << std::endl;
+        std::cout << "-meat" << std::endl;
     }
 
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Fuel capacity: " << fuelCapacity << endl;
+    void cook() override {
+        std::cout << "Cooking soup on the stove" << std::endl;
+    }
+
+    void serve() override {
+        std::cout << "Serve the soup in a plate" << std::endl;
     }
 };
 
-class Truck : public Vehicle {
-private:
-    double cargoCapacity;
-
+class Builder {
 public:
-    Truck(string name = "", string type = "Truck", double cargoCapacity = 10000)
-        : Vehicle(name, type) {
-        this->cargoCapacity = cargoCapacity;
-    }
+    virtual void build(Dish* dish) = 0;
+};
 
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Cargo capacity: " << cargoCapacity << endl;
+class PizzaBuilder : public Builder {
+public:
+    void build(Dish* dish) override {
+        dish->prepareIngredients();
+        dish->cook();
+        dish->serve();
+    }
+};
+
+class SoupBuilder : public Builder {
+public:
+    void build(Dish* dish) override {
+        dish->prepareIngredients();
+        dish->cook();
+        dish->serve();
     }
 };
 
 int main() {
-    Vehicle* vehicles[] = {
-        new Car("BMW", "Sedan", 60),
-        new Truck("Volvo", "Semi-trailer", 40000),
-    };
+    Dish* dish;
 
-    for (Vehicle* vehicle : vehicles) {
-        vehicle->getInfo();
-    }
+    // ЅудуЇмо п≥цу
+    PizzaBuilder pizzaBuilder;
+    dish = new Pizza();
+    pizzaBuilder.build(dish);
 
-    for (Vehicle* vehicle : vehicles) {
-        delete vehicle;
-    }
+    // ЅудуЇмо суп
+    SoupBuilder soupBuilder;
+    dish = new Soup();
+    soupBuilder.build(dish);
 
     return 0;
 }
