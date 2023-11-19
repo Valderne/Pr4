@@ -1,104 +1,70 @@
 #include <iostream>
+#include <vector>
+
+
 using namespace std;
 
-class Car {
+// Інтерфейс спостерігача
+class Observer {
 public:
-    virtual string getModel() = 0;
-    virtual int getHorsepower() = 0;
-    virtual int getYear() = 0;
-    virtual int getCost() = 0;
-    virtual ~Car() {};
+    virtual void update() = 0;
 };
 
-class Nissan : public Car {
+// Інтерфейс спостережуваного об'єкта
+class Subject {
 public:
-    Nissan(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
-    }
-    string getModel() {
-        return model;
-    }
-    int getHorsepower() {
-        return horsepower;
-    }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
+    virtual void addObserver(Observer* observer) = 0;
+    virtual void removeObserver(Observer* observer) = 0;
+    virtual void notifyObservers() = 0;
+};
+
+// Конкретний спостережуваний об'єкт
+class ConcreteSubject : public Subject {
 private:
-    string model = "Nissan";
-    int cost = 15000;
-    int horsepower;
-    int year;
-};
+    vector<Observer*> observers;
 
-class Toyota : public Car {
 public:
-    Toyota(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
+    void addObserver(Observer* observer) override {
+        observers.push_back(observer);
     }
-    string getModel() {
-        return model;
+
+    void removeObserver(Observer* observer) override {
+        observers.erase(find(observers.begin(), observers.end(), observer));
     }
-    int getHorsepower() {
-        return horsepower;
+
+    void notifyObservers() override {
+        for (Observer* observer : observers) {
+            observer->update();
+        }
     }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
-private:
-    string model = "Supra";
-    int cost = 12000;
-    int horsepower;
-    int year;
 };
 
-class BMW : public Car {
+// Конкретний спостерігач
+class ConcreteObserver : public Observer {
 public:
-    BMW(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
+    void update() override {
+        cout << "The observer received an update" << endl;
     }
-    string getModel() {
-        return model;
-    }
-    int getHorsepower() {
-        return horsepower;
-    }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
-private:
-    string model = "E36";
-    int cost = 8000;
-    int horsepower;
-    int year;
 };
 
-int main()
-{
-    Car* cars[] = { new Nissan(1020,2007), new Toyota(730, 2015), new BMW(715,2000) };
-    for (int i = 0; i < size(cars); i++) {
-        cout << "Model: " << cars[i]->getModel() << endl
-            << "Horsepower: " << cars[i]->getHorsepower() << endl
-            << "Year: " << cars[i]->getYear() << endl
-            << "Cost: " << cars[i]->getCost() << endl
-            << "--------------" << endl;
-    }
+int main() {
+    // Створюємо спостережуваний об'єкт
+    ConcreteSubject* subject = new ConcreteSubject();
 
-    for (int i = 0; i < size(cars); i++) {
-        delete cars[i];
-    }
+    // Створюємо спостерігача
+    ConcreteObserver* observer = new ConcreteObserver();
+
+    // Додаємо спостерігача до спостережуваного об'єкта
+    subject->addObserver(observer);
+
+    // Оповіщаємо спостерігачів
+    subject->notifyObservers();
+
+    // Видаляємо спостерігача з спостережуваного об'єкта
+    subject->removeObserver(observer);
+
+    // Оповіщаємо спостерігачів
+    subject->notifyObservers();
 
     return 0;
 }
