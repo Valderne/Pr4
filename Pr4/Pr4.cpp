@@ -1,71 +1,52 @@
 #include <iostream>
 
-using namespace std;
-
-class Vehicle {
-protected:
-    string name;
-    string type;
-
+class Target {
 public:
-    Vehicle(string name = "", string type = "") {
-        this->name = name;
-        this->type = type;
-    }
+    virtual ~Target() = default;
 
-    ~Vehicle() {}
-
-    virtual void getInfo() {
-        cout << "Name: " << name << endl;
-        cout << "Type: " << type << endl;
+    virtual std::string Request() const {
+        return "Target: The default target's behavior.";
     }
 };
-
-class Car : public Vehicle {
+class Adaptee {
+public:
+    std::string SpecificRequest() const {
+        return ".eetpadA eht fo roivaheb laicepS";
+    }
+};
+class Adapter : public Target {
 private:
-    double fuelCapacity;
+    Adaptee* adaptee_;
 
 public:
-    Car(string name = "", string type = "Car", double fuelCapacity = 50)
-        : Vehicle(name, type) {
-        this->fuelCapacity = fuelCapacity;
-    }
-
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Fuel capacity: " << fuelCapacity << endl;
+    Adapter(Adaptee* adaptee) : adaptee_(adaptee) {}
+    std::string Request() const override {
+        std::string to_reverse = this->adaptee_->SpecificRequest();
+        std::reverse(to_reverse.begin(), to_reverse.end());
+        return "Adapter: (TRANSLATED) " + to_reverse;
     }
 };
-
-class Truck : public Vehicle {
-private:
-    double cargoCapacity;
-
-public:
-    Truck(string name = "", string type = "Truck", double cargoCapacity = 10000)
-        : Vehicle(name, type) {
-        this->cargoCapacity = cargoCapacity;
-    }
-
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Cargo capacity: " << cargoCapacity << endl;
-    }
-};
+void ClientCode(const Target* target) {
+    std::cout << target->Request();
+}
 
 int main() {
-    Vehicle* vehicles[] = {
-        new Car("BMW", "Sedan", 60),
-        new Truck("Volvo", "Semi-trailer", 40000),
-    };
+    std::cout << "Client: I can work just fine with the Target objects:\n";
+    Target* target = new Target;
+    ClientCode(target);
+    std::cout << "\n\n";
+    Adaptee* adaptee = new Adaptee;
+    std::cout << "Client: The Adaptee class has a weird interface. See, I don't understand it:\n";
+    std::cout << "Adaptee: " << adaptee->SpecificRequest();
+    std::cout << "\n\n";
+    std::cout << "Client: But I can work with it via the Adapter:\n";
+    Adapter* adapter = new Adapter(adaptee);
+    ClientCode(adapter);
+    std::cout << "\n";
 
-    for (Vehicle* vehicle : vehicles) {
-        vehicle->getInfo();
-    }
-
-    for (Vehicle* vehicle : vehicles) {
-        delete vehicle;
-    }
+    delete target;
+    delete adaptee;
+    delete adapter;
 
     return 0;
 }
