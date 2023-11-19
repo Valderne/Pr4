@@ -1,104 +1,52 @@
 #include <iostream>
-using namespace std;
 
-class Car {
+class Target {
 public:
-    virtual string getModel() = 0;
-    virtual int getHorsepower() = 0;
-    virtual int getYear() = 0;
-    virtual int getCost() = 0;
-    virtual ~Car() {};
+    virtual ~Target() = default;
+
+    virtual std::string Request() const {
+        return "Target: The default target's behavior.";
+    }
 };
-
-class Nissan : public Car {
+class Adaptee {
 public:
-    Nissan(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
+    std::string SpecificRequest() const {
+        return ".eetpadA eht fo roivaheb laicepS";
     }
-    string getModel() {
-        return model;
-    }
-    int getHorsepower() {
-        return horsepower;
-    }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
+};
+class Adapter : public Target {
 private:
-    string model = "Nissan";
-    int cost = 15000;
-    int horsepower;
-    int year;
-};
+    Adaptee* adaptee_;
 
-class Toyota : public Car {
 public:
-    Toyota(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
+    Adapter(Adaptee* adaptee) : adaptee_(adaptee) {}
+    std::string Request() const override {
+        std::string to_reverse = this->adaptee_->SpecificRequest();
+        std::reverse(to_reverse.begin(), to_reverse.end());
+        return "Adapter: (TRANSLATED) " + to_reverse;
     }
-    string getModel() {
-        return model;
-    }
-    int getHorsepower() {
-        return horsepower;
-    }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
-private:
-    string model = "Supra";
-    int cost = 12000;
-    int horsepower;
-    int year;
 };
+void ClientCode(const Target* target) {
+    std::cout << target->Request();
+}
 
-class BMW : public Car {
-public:
-    BMW(int _horsepower, int _year) {
-        horsepower = _horsepower;
-        year = _year;
-    }
-    string getModel() {
-        return model;
-    }
-    int getHorsepower() {
-        return horsepower;
-    }
-    int getYear() {
-        return year;
-    }
-    int getCost() {
-        return cost;
-    }
-private:
-    string model = "E36";
-    int cost = 8000;
-    int horsepower;
-    int year;
-};
+int main() {
+    std::cout << "Client: I can work just fine with the Target objects:\n";
+    Target* target = new Target;
+    ClientCode(target);
+    std::cout << "\n\n";
+    Adaptee* adaptee = new Adaptee;
+    std::cout << "Client: The Adaptee class has a weird interface. See, I don't understand it:\n";
+    std::cout << "Adaptee: " << adaptee->SpecificRequest();
+    std::cout << "\n\n";
+    std::cout << "Client: But I can work with it via the Adapter:\n";
+    Adapter* adapter = new Adapter(adaptee);
+    ClientCode(adapter);
+    std::cout << "\n";
 
-int main()
-{
-    Car* cars[] = { new Nissan(1020,2007), new Toyota(730, 2015), new BMW(715,2000) };
-    for (int i = 0; i < size(cars); i++) {
-        cout << "Model: " << cars[i]->getModel() << endl
-            << "Horsepower: " << cars[i]->getHorsepower() << endl
-            << "Year: " << cars[i]->getYear() << endl
-            << "Cost: " << cars[i]->getCost() << endl
-            << "--------------" << endl;
-    }
-
-    for (int i = 0; i < size(cars); i++) {
-        delete cars[i];
-    }
+    delete target;
+    delete adaptee;
+    delete adapter;
 
     return 0;
 }
