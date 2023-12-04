@@ -2,7 +2,7 @@
 #include <iterator>
 #include <vector>
 
-// Інтерфейс Обробника
+// Processor interface
 class Handler {
 public:
     Handler* next;
@@ -10,7 +10,7 @@ public:
     virtual void handle(int request) = 0;
 };
 
-// Клас Конкретного обробника 1
+// Class of Concrete Handler 1
 class ConcreteHandler1 : public Handler {
 public:
     ConcreteHandler1() {
@@ -19,10 +19,10 @@ public:
 
     void handle(int request) override {
         if (request <= 10) {
-            std::cout << "A specific handler 1 processed the request" << request << std::endl; //Конкретний обробник 1 обробив запит
+            std::cout << "A specific handler 1 processed the request" << request << std::endl; 
         }
         else {
-            // Передача запиту наступному обробнику
+            // Forwarding the request to the next handler
             if (next != nullptr) {
                 next->handle(request);
             }
@@ -30,7 +30,7 @@ public:
     }
 };
 
-// Клас Конкретного обробника 2
+// Class of Concrete Handler 2
 class ConcreteHandler2 : public Handler {
 public:
     ConcreteHandler2() {
@@ -39,10 +39,10 @@ public:
 
     void handle(int request) override {
         if (request <= 20) {
-            std::cout << "A specific handler 2 processed the request" << request << std::endl;//Конкретний обробник 2 обробив запит 
+            std::cout << "A specific handler 2 processed the request" << request << std::endl;
         }
         else {
-            // Передача запиту наступному обробнику
+            // Forwarding the request to the next handler
             if (next != nullptr) {
                 next->handle(request);
             }
@@ -50,7 +50,7 @@ public:
     }
 };
 
-// Клас Конкретного обробника 3
+// Class of Concrete Handler 3
 class ConcreteHandler3 : public Handler {
 public:
     ConcreteHandler3() {
@@ -58,17 +58,17 @@ public:
     }
 
     void handle(int request) override {
-        std::cout << "A specific handler 3 processed the request" << request << std::endl;//Конкретний обробник 3 обробив запит 
+        std::cout << "A specific handler 3 processed the request" << request << std::endl;
     }
 };
 
 int main() {
-    // Створюємо ланцюг обробників
+    // We create a chain of handlers
     Handler* handler1 = new ConcreteHandler1();
     handler1->next = new ConcreteHandler2();
     handler1->next->next = new ConcreteHandler3();
 
-    // Передаємо запит ланцюгу обробників
+    // We pass the request to the chain of handlers
     handler1->handle(15);
 
     return 0;
