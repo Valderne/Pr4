@@ -1,71 +1,75 @@
 #include <iostream>
+#include <iterator>
+#include <vector>
 
-using namespace std;
-
-class Vehicle {
-protected:
-    string name;
-    string type;
-
+// Processor interface
+class Handler {
 public:
-    Vehicle(string name = "", string type = "") {
-        this->name = name;
-        this->type = type;
+    Handler* next;
+
+    virtual void handle(int request) = 0;
+};
+
+// Class of Concrete Handler 1
+class ConcreteHandler1 : public Handler {
+public:
+    ConcreteHandler1() {
+        next = nullptr;
     }
 
-    ~Vehicle() {}
-
-    virtual void getInfo() {
-        cout << "Name: " << name << endl;
-        cout << "Type: " << type << endl;
+    void handle(int request) override {
+        if (request <= 10) {
+            std::cout << "A specific handler 1 processed the request" << request << std::endl; 
+        }
+        else {
+            // Forwarding the request to the next handler
+            if (next != nullptr) {
+                next->handle(request);
+            }
+        }
     }
 };
 
-class Car : public Vehicle {
-private:
-    double fuelCapacity;
-
+// Class of Concrete Handler 2
+class ConcreteHandler2 : public Handler {
 public:
-    Car(string name = "", string type = "Car", double fuelCapacity = 50)
-        : Vehicle(name, type) {
-        this->fuelCapacity = fuelCapacity;
+    ConcreteHandler2() {
+        next = nullptr;
     }
 
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Fuel capacity: " << fuelCapacity << endl;
+    void handle(int request) override {
+        if (request <= 20) {
+            std::cout << "A specific handler 2 processed the request" << request << std::endl;
+        }
+        else {
+            // Forwarding the request to the next handler
+            if (next != nullptr) {
+                next->handle(request);
+            }
+        }
     }
 };
 
-class Truck : public Vehicle {
-private:
-    double cargoCapacity;
-
+// Class of Concrete Handler 3
+class ConcreteHandler3 : public Handler {
 public:
-    Truck(string name = "", string type = "Truck", double cargoCapacity = 10000)
-        : Vehicle(name, type) {
-        this->cargoCapacity = cargoCapacity;
+    ConcreteHandler3() {
+        next = nullptr;
     }
 
-    void getInfo() override {
-        Vehicle::getInfo();
-        cout << "Cargo capacity: " << cargoCapacity << endl;
+    void handle(int request) override {
+        std::cout << "A specific handler 3 processed the request" << request << std::endl;
     }
 };
 
 int main() {
-    Vehicle* vehicles[] = {
-        new Car("BMW", "Sedan", 60),
-        new Truck("Volvo", "Semi-trailer", 40000),
-    };
+    // We create a chain of handlers
+    Handler* handler1 = new ConcreteHandler1();
+    handler1->next = new ConcreteHandler2();
+    handler1->next->next = new ConcreteHandler3();
 
-    for (Vehicle* vehicle : vehicles) {
-        vehicle->getInfo();
-    }
-
-    for (Vehicle* vehicle : vehicles) {
-        delete vehicle;
-    }
+    // We pass the request to the chain of handlers
+    handler1->handle(15);
 
     return 0;
 }
