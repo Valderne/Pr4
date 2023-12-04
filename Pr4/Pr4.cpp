@@ -1,70 +1,75 @@
 #include <iostream>
+#include <iterator>
 #include <vector>
 
-
-using namespace std;
-
-// Інтерфейс спостерігача
-class Observer {
+// Інтерфейс Обробника
+class Handler {
 public:
-    virtual void update() = 0;
+    Handler* next;
+
+    virtual void handle(int request) = 0;
 };
 
-// Інтерфейс спостережуваного об'єкта
-class Subject {
+// Клас Конкретного обробника 1
+class ConcreteHandler1 : public Handler {
 public:
-    virtual void addObserver(Observer* observer) = 0;
-    virtual void removeObserver(Observer* observer) = 0;
-    virtual void notifyObservers() = 0;
-};
-
-// Конкретний спостережуваний об'єкт
-class ConcreteSubject : public Subject {
-private:
-    vector<Observer*> observers;
-
-public:
-    void addObserver(Observer* observer) override {
-        observers.push_back(observer);
+    ConcreteHandler1() {
+        next = nullptr;
     }
 
-    void removeObserver(Observer* observer) override {
-        observers.erase(find(observers.begin(), observers.end(), observer));
-    }
-
-    void notifyObservers() override {
-        for (Observer* observer : observers) {
-            observer->update();
+    void handle(int request) override {
+        if (request <= 10) {
+            std::cout << "A specific handler 1 processed the request" << request << std::endl; //Конкретний обробник 1 обробив запит
+        }
+        else {
+            // Передача запиту наступному обробнику
+            if (next != nullptr) {
+                next->handle(request);
+            }
         }
     }
 };
 
-// Конкретний спостерігач
-class ConcreteObserver : public Observer {
+// Клас Конкретного обробника 2
+class ConcreteHandler2 : public Handler {
 public:
-    void update() override {
-        cout << "The observer received an update" << endl;
+    ConcreteHandler2() {
+        next = nullptr;
+    }
+
+    void handle(int request) override {
+        if (request <= 20) {
+            std::cout << "A specific handler 2 processed the request" << request << std::endl;//Конкретний обробник 2 обробив запит 
+        }
+        else {
+            // Передача запиту наступному обробнику
+            if (next != nullptr) {
+                next->handle(request);
+            }
+        }
+    }
+};
+
+// Клас Конкретного обробника 3
+class ConcreteHandler3 : public Handler {
+public:
+    ConcreteHandler3() {
+        next = nullptr;
+    }
+
+    void handle(int request) override {
+        std::cout << "A specific handler 3 processed the request" << request << std::endl;//Конкретний обробник 3 обробив запит 
     }
 };
 
 int main() {
-    // Створюємо спостережуваний об'єкт
-    ConcreteSubject* subject = new ConcreteSubject();
+    // Створюємо ланцюг обробників
+    Handler* handler1 = new ConcreteHandler1();
+    handler1->next = new ConcreteHandler2();
+    handler1->next->next = new ConcreteHandler3();
 
-    // Створюємо спостерігача
-    ConcreteObserver* observer = new ConcreteObserver();
-
-    // Додаємо спостерігача до спостережуваного об'єкта
-    subject->addObserver(observer);
-
-    // Оповіщаємо спостерігачів
-    subject->notifyObservers();
-
-    // Видаляємо спостерігача з спостережуваного об'єкта
-    subject->removeObserver(observer);
-
-    // Оповіщаємо спостерігачів
-    subject->notifyObservers();
+    // Передаємо запит ланцюгу обробників
+    handler1->handle(15);
 
     return 0;
 }
